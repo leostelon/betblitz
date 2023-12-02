@@ -1,26 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Box, Menu, MenuItem } from "@mui/material";
-import { BsPerson } from "react-icons/bs";
-import { connectWalletToSite, getWalletAddress } from "../utils/wallet";
+import { useNavigate } from "react-router-dom";
 import { HiOutlineLogout } from "react-icons/hi";
 import { MdOutlinePersonOutline } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
-import { UpdateEmailDialog } from "./UpdateEmailDialog";
+import { BsPerson } from "react-icons/bs";
+import { connectWalletToSite, getWalletAddress } from "../utils/wallet";
+import { Avatar, Box, Menu, MenuItem } from "@mui/material";
+import { useState } from "react";
 
 export const Navbar = () => {
-	const [updateName, setUpdateName] = useState(false);
+	const [connectedToSite, setConnectedToSite] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
-	const [user, setUser] = useState({});
 	const open = Boolean(anchorEl);
 	const navigate = useNavigate();
-	const [connectedToSite, setConnectedToSite] = useState(false);
-
-	const handleClick = (event) => {
-		setAnchorEl(event.currentTarget);
-	};
-	const handleClose = () => {
-		setAnchorEl(null);
-	};
 
 	async function connectSite() {
 		await connectWalletToSite();
@@ -34,74 +24,34 @@ export const Navbar = () => {
 		}
 	}
 
-	async function checkAndUpdateNameDialog(address) {
-		const user = await getUser(address);
-		setUser(user);
-		if (!user.updatedUsername) {
-			setUpdateName(true);
-		}
-	}
-
-	async function getUser() {
-		// TODO
-	}
-
-	useEffect(() => {
-		connectSite();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	const handleClick = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
 
 	return (
 		<Box
 			sx={{
-				position: "relative",
-				width: "100%",
+				p: 2,
+				pt: 3,
 				display: "flex",
-				alignItems: "center",
-				flexDirection: "column",
+				color: "#4c4848",
 			}}
 		>
-			<UpdateEmailDialog isOpen={updateName} />
-			<Box
-				position={"absolute"}
-				right={0}
-				sx={{
-					backgroundColor: "#EFF2FA",
-					backgroundPosition: "right",
-					backgroundRepeat: "no-repeat",
-					width: "100vw",
-					height: "100vh",
-					filter: "brightness(2)",
-					zIndex: -1,
-				}}
-			></Box>
-			<div className="navbar">
-				<div
-					onClick={() => {
-						navigate("/");
-					}}
-					style={{ cursor: "pointer" }}
-				>
-					<h1 style={{ alignItems: "flex-start", display: "flex" }}>
-						Nomad Info📜
-					</h1>
-				</div>
-				<div
+			<Box flex={3}>
+				<h1
 					style={{
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "center",
+						fontFamily: "Bebas Neue",
 					}}
 				>
-					<Box className="navlist">
-						<p
-							onClick={() =>
-								window.open("https://github.com/leostelon/dedocker", "_blank")
-							}
-						>
-							Github
-						</p>
-					</Box>
+					Gamble forever❤️
+				</h1>
+				<br />
+			</Box>
+			<Box flex={1} p={1}>
+				<Box>
 					{!connectedToSite ? (
 						<Box onClick={connectSite} className="upload-button">
 							Connect Wallet
@@ -166,8 +116,8 @@ export const Navbar = () => {
 							</Menu>
 						</Box>
 					)}
-				</div>
-			</div>
+				</Box>
+			</Box>
 		</Box>
 	);
 };
