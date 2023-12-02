@@ -161,7 +161,11 @@ export function LeftDrawer({ smaller }) {
 				<Box>
 					{/* Logo */}
 					<Box sx={{ mb: 6, display: "flex", alignItems: "center" }}>
-						<h2 style={{ paddingTop: "8px" }}>Forever.</h2>
+						<Box
+							style={{ paddingTop: "8px", fontSize: "28px", fontWeight: "700" }}
+						>
+							Bet<span style={{ color: "#F8312F" }}>Blitz</span>
+						</Box>
 					</Box>
 
 					{/* Menu List */}
