@@ -19,7 +19,7 @@ export const Home = () => {
 		<Box>
 			{data?.length > 0 &&
 				data.map((d, i) => {
-					return <QuestionCard key={i} />;
+					return <QuestionCard question={d} key={i} />;
 				})}
 		</Box>
 	);
