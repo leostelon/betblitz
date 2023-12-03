@@ -3,26 +3,14 @@ import { HiOutlineLogout } from "react-icons/hi";
 import { MdOutlinePersonOutline } from "react-icons/md";
 import { BsPerson } from "react-icons/bs";
 import { connectWalletToSite, getWalletAddress } from "../utils/wallet";
-import { Avatar, Box, Menu, MenuItem } from "@mui/material";
-import { useState } from "react";
+import { Box, Menu, MenuItem } from "@mui/material";
+import { useEffect, useState } from "react";
+import UseWallet from "../hooks/UseWallet";
 
 export const Navbar = () => {
-	const [connectedToSite, setConnectedToSite] = useState(false);
 	const [anchorEl, setAnchorEl] = useState(null);
 	const open = Boolean(anchorEl);
 	const navigate = useNavigate();
-
-	async function connectSite() {
-		await connectWalletToSite();
-		const address = await getWalletAddress();
-		if (address && address !== "") {
-			localStorage.setItem("address", address);
-			setConnectedToSite(true);
-			// if (token && token !== "" && token !== "undefined") {
-			// 	checkAndUpdateNameDialog(address);
-			// }
-		}
-	}
 
 	const handleClick = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -30,6 +18,19 @@ export const Navbar = () => {
 	const handleClose = () => {
 		setAnchorEl(null);
 	};
+
+	const { connectedToSite, handleGetUser } = UseWallet();
+
+	async function connectSite() {
+		let connected = await connectWalletToSite();
+		if (connected) {
+			await handleGetUser();
+		}
+	}
+
+	useEffect(() => {
+		connectSite();
+	}, []);
 
 	return (
 		<Box

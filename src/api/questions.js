@@ -1,11 +1,10 @@
 import { default as axios } from "axios";
-
-const SERVER_URL = process.env.REACT_APP_SERVER_URL;
+import { SERVER_URL } from "../constant";
 
 export const createQuestion = async function (data) {
 	try {
 		let token = localStorage.getItem("token");
-		const response = await axios.post(SERVER_URL + "questions", data, {
+		const response = await axios.post(SERVER_URL + "/questions", data, {
 			headers: {
 				"Content-Type": `application/json`,
 				Authorization: "Bearer " + token,
@@ -22,7 +21,7 @@ export const createQuestion = async function (data) {
 export const getQuestions = async function () {
 	try {
 		let token = localStorage.getItem("token");
-		const response = await axios.get(SERVER_URL + "questions", {
+		const response = await axios.get(SERVER_URL + "/questions", {
 			headers: {
 				"Content-Type": `application/json`,
 				Authorization: "Bearer " + token,
