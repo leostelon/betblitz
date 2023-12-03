@@ -4,11 +4,12 @@ import { getWalletAddress, switchChain } from "../utils/wallet";
 import Web3 from "web3";
 import BetBlitz from "../contracts/BetBlitz.json";
 import { CHAIN } from "../constant";
+import { voteQuestion } from "../api/questions";
 
-export const QuestionCard = ({ id, value }) => {
+export const QuestionCard = ({ question }) => {
 	const [loading, setLoading] = useState(false);
 
-	async function vote(response) {
+	async function vote(finalAnswer) {
 		await switchChain();
 		setLoading(true);
 		const web3 = new Web3(window.ethereum);
@@ -19,26 +20,25 @@ export const QuestionCard = ({ id, value }) => {
 		);
 
 		const currentAddress = await getWalletAddress();
-		// dynamic value
-		value = 123;
-		id = 3;
+
+		// Get value for question
+		const value = await contract.methods.questionPrice(question.qid).call();
 
 		// Gas Calculation
 		const gasPrice = await web3.eth.getGasPrice();
-		const gas = await contract.methods.createVote("3", false).estimateGas({
-			from: currentAddress,
-			value,
-		});
+		const gas = await contract.methods
+			.createVote(question.qid, finalAnswer)
+			.estimateGas({
+				from: currentAddress,
+				value,
+			});
 
 		await contract.methods
-			.createVote("3", false)
+			.createVote(question.qid, finalAnswer)
 			.send({ from: currentAddress, gasPrice, gas, value })
 			.on("receipt", async function (receipt) {
-				// await createLilypadJob({
-				// 	job_id: receipt.events.JobCreated.returnValues.jobId,
-				// 	tx_hash: receipt.transactionHash,
-				// 	block_number: receipt.blockNumber,
-				// });
+				await voteQuestion(question._id, finalAnswer);
+
 				setLoading(false);
 				alert("Succesfully voted🥳🍾");
 			});
@@ -89,7 +89,7 @@ export const QuestionCard = ({ id, value }) => {
 						Quod, cumque. Laborum veritatis laboriosam natus eum. Perspiciatis
 						itaque odio quod dolorem distinctio?
 					</p>
-					<Box onClick={() => vote(1)}>Vote</Box>
+					<Box onClick={() => vote(false)}>Vote</Box>
 				</Box>
 				<Box
 					sx={{

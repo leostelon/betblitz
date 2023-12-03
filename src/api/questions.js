@@ -57,3 +57,28 @@ export const uploadNodejsScript = async function (script) {
 		return { error: true };
 	}
 };
+
+export const voteQuestion = async function (_id, finalAnswer) {
+	try {
+		console.log(_id);
+		let token = localStorage.getItem("token");
+		const response = await axios.post(
+			SERVER_URL + "/questions/vote",
+			{
+				question: _id,
+				finalAnswer,
+			},
+			{
+				headers: {
+					"Content-Type": `application/json`,
+					Authorization: "Bearer " + token,
+				},
+			}
+		);
+		if (response.status === 201) {
+			return response.data;
+		}
+	} catch (error) {
+		console.log(error.message);
+	}
+};
