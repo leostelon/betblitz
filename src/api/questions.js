@@ -34,3 +34,26 @@ export const getQuestions = async function () {
 		console.log(error.message);
 	}
 };
+
+export const uploadNodejsScript = async function (script) {
+	try {
+		let token = localStorage.getItem("token");
+
+		const response = await axios.post(
+			SERVER_URL + "/questions/nodescript",
+			{ script },
+			{
+				headers: {
+					"Content-Type": `application/json`,
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+		console.log("uploadNodejsScript upload responce |", response);
+
+		return { error: false, data: response.data };
+	} catch (error) {
+		console.log(error.message);
+		return { error: true };
+	}
+};
