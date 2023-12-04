@@ -14,7 +14,12 @@ import {
 	AiOutlineLogout,
 	AiOutlinePlusCircle,
 } from "react-icons/ai";
-import { MdNotifications, MdNotificationsActive } from "react-icons/md";
+import {
+	MdCategory,
+	MdNotifications,
+	MdNotificationsActive,
+	MdOutlineCategory,
+} from "react-icons/md";
 
 const drawerWidth = 260;
 
@@ -26,16 +31,16 @@ const mainList = [
 		path: "/",
 	},
 	{
+		text: "Categories",
+		i: () => <MdOutlineCategory />,
+		ai: () => <MdCategory />,
+		path: "/categories",
+	},
+	{
 		text: "Notifications",
 		i: () => <MdNotifications />,
 		ai: () => <MdNotificationsActive />,
 		path: "/notifications",
-	},
-	{
-		text: "Coin Play",
-		i: () => <AiOutlineDatabase />,
-		ai: () => <AiFillDatabase />,
-		path: "/coin",
 	},
 	{
 		text: "Your Posts",

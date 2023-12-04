@@ -1,17 +1,20 @@
-import { Avatar, Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import React, { useState } from "react";
 import { getWalletAddress, switchChain } from "../utils/wallet";
 import Web3 from "web3";
 import BetBlitz from "../contracts/BetBlitz.json";
 import { CHAIN } from "../constant";
 import { voteQuestion } from "../api/questions";
+import Youtube from "../assets/youtube.png";
 
 export const QuestionCard = ({ question }) => {
 	const [loading, setLoading] = useState(false);
+	const [yesLoading, setYesLoading] = useState(false);
 
 	async function vote(finalAnswer) {
 		await switchChain();
 		setLoading(true);
+		setYesLoading(true);
 		const web3 = new Web3(window.ethereum);
 
 		const contract = new web3.eth.Contract(
@@ -20,7 +23,6 @@ export const QuestionCard = ({ question }) => {
 		);
 
 		const currentAddress = await getWalletAddress();
-
 		// Get value for question
 		const value = await contract.methods.questionPrice(question.qid).call();
 
@@ -40,69 +42,87 @@ export const QuestionCard = ({ question }) => {
 				await voteQuestion(question._id, finalAnswer);
 
 				setLoading(false);
+				setYesLoading(true);
 				alert("Succesfully voted🥳🍾");
+				window.location.reload();
 			});
 		setLoading(false);
+		setYesLoading(true);
 	}
 
 	return (
 		<Box
 			sx={{
 				color: "black",
-				mb: 2,
-				borderBottom: "0.5px dashed #c9c9c9",
-				pb: 2,
+				boxShadow: "0 1px 6px rgba(0,0,0,.1)",
+				p: 1.5,
 			}}
 		>
-			<Box mb={1} display={"flex"} alignItems={"center"}>
-				<Avatar sx={{ width: 32, height: 32 }} />
-				<Box
-					style={{
-						fontSize: "12px",
-						fontWeight: "500",
-						color: "black",
-					}}
-					ml={1}
-				>
-					<p style={{ color: "black" }}>@leostelon</p>
-					<small>4:53PM 12th Nov 2023</small>
-				</Box>
-			</Box>
-			<Box
-				sx={{
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-				}}
-			>
-				<Box>
-					<p style={{ marginTop: "4px" }}>Some title of the article.</p>
-					<p
-						style={{
-							color: "grey",
-							marginTop: "6px",
-							textAlign: "justify",
-						}}
-					>
-						Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde
-						ratione nemo sit explicabo? Harum quibusdam provident voluptas.
-						Quod, cumque. Laborum veritatis laboriosam natus eum. Perspiciatis
-						itaque odio quod dolorem distinctio?
-					</p>
-					<Box onClick={() => vote(false)}>Vote</Box>
-				</Box>
+			<Box display={"flex"}>
+				<p style={{ flex: 1 }}>{question.question}</p>
 				<Box
 					sx={{
-						minWidth: "100px",
-						height: "100px",
-						borderRadius: "8px",
-						ml: 2,
-						backgroundImage: `url(${"https://miro.medium.com/v2/resize:fit:1100/format:webp/1*Q9GGI2LPnPN-DF15FBeNiA.jpeg"})`,
-						backgroundPosition: "center",
+						backgroundImage: `url("${Youtube}")`,
+						backgroundRepeat: "no-repeat",
 						backgroundSize: "cover",
+						backgroundPosition: "center",
+						height: "50px",
+						width: "50px",
+						mb: 2,
+						borderRadius: "32px",
 					}}
 				></Box>
 			</Box>
+			<Box display={"flex"}>
+				<Box
+					sx={{
+						flex: 1,
+						p: 1.5,
+						textAlign: "center",
+						borderRadius: "8px",
+						cursor: "pointer",
+						mr: 1,
+						backgroundColor: "#E8F2FF",
+						color: "#197BFF",
+					}}
+					onClick={() => vote(true)}
+				>
+					{loading && yesLoading ? <CircularProgress size={"10px"} /> : "Yes"}
+				</Box>
+				<Box
+					sx={{
+						flex: 1,
+						p: 1.5,
+						textAlign: "center",
+						borderRadius: "8px",
+						cursor: "pointer",
+						backgroundColor: "#FDF3F2",
+						color: "#DC2804",
+					}}
+					onClick={() => vote(false)}
+				>
+					{loading && !yesLoading ? <CircularProgress size={"10px"} /> : "No"}
+				</Box>
+			</Box>
+			{question.votes.length > 0 ? (
+				<Box
+					sx={{
+						textAlign: "center",
+						py: 1,
+						backgroundColor: "#dedede6e",
+						mt: 1,
+						borderRadius: "4px",
+					}}
+				>
+					You have already voted{" "}
+					<span style={{ fontWeight: "bold" }}>
+						{question.votes["finalAnswer"] ? "YES" : "NO"}
+					</span>{" "}
+					to this🥳
+				</Box>
+			) : (
+				""
+			)}
 		</Box>
 	);
 };

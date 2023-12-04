@@ -22,10 +22,7 @@ export const Home = () => {
 		{ title: "Crypto", image: Crypto, path: "bets/crypto" },
 		{ title: "Baseball", image: Baseball, path: "bets/fileupload" },
 		{ title: "BasketBall", image: Basketball, path: "bets/fileupload" },
-		{ title: "Football", image: Football, path: "bets/tensorflowtrain" },
 		{ title: "News", image: News, path: "bets/datasetupload" },
-		{ title: "Chess", image: Chess, path: "bets/marketplace" },
-		{ title: "Stocks", image: Stocks, path: "bets/marketplace" },
 	];
 
 	const getQuestionsData = async () => {
@@ -38,8 +35,8 @@ export const Home = () => {
 	}, []);
 
 	return (
-		<Box sx={{ pt: 1, p: 2, display: "flex" }}>
-			<Box flex={3}>
+		<Box sx={{ pt: 1, display: "flex" }}>
+			<Box flex={3} pr={1}>
 				<Box
 					sx={{
 						backgroundImage: `url("${Banner}")`,
@@ -53,8 +50,7 @@ export const Home = () => {
 					}}
 				></Box>
 				<h2 style={{ color: "rgb(82, 82, 82)" }}>Bet on your decisions 🎲</h2>
-				<br />
-				<Box display={"flex"}>
+				<Box display={"flex"} mt={1} mb={2}>
 					{actions.map((i, ind) => {
 						return (
 							<Box
@@ -108,8 +104,7 @@ export const Home = () => {
 					})}
 				</Box>
 				<h2 style={{ color: "rgb(82, 82, 82)" }}>Trust your guts ⚡</h2>
-				<br />
-				<Box display={"flex"}>
+				<Box display={"flex"} mt={1} mb={2}>
 					{actions.slice(0, 1).map((i, ind) => {
 						return (
 							<Box
@@ -160,6 +155,20 @@ export const Home = () => {
 								</Box>
 							</Box>
 						);
+					})}
+				</Box>
+			</Box>
+			<Box flex={1} p={1} borderLeft="1px solid #ededed">
+				<Box
+					sx={{
+						p: "1",
+						fontSize: "14px",
+						fontWeight: "500",
+					}}
+				>
+					<strong>Latest bets🆕</strong>
+					{data.map((d, i) => {
+						return <QuestionCard question={d} key={i} />;
 					})}
 				</Box>
 			</Box>
