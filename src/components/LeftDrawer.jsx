@@ -31,6 +31,12 @@ const mainList = [
 		path: "/notifications",
 	},
 	{
+		text: "Coin Play",
+		i: () => <AiOutlineDatabase />,
+		ai: () => <AiFillDatabase />,
+		path: "/coin",
+	},
+	{
 		text: "Your Posts",
 		i: () => <AiOutlineDatabase />,
 		ai: () => <AiFillDatabase />,
