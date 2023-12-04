@@ -11,6 +11,7 @@ import {
 	AiFillPlusCircle,
 	AiOutlineDatabase,
 	AiOutlineHome,
+	AiOutlineLogout,
 	AiOutlinePlusCircle,
 } from "react-icons/ai";
 import { MdNotifications, MdNotificationsActive } from "react-icons/md";
@@ -155,23 +156,19 @@ export function LeftDrawer({ smaller }) {
 		>
 			<Box
 				sx={{
-					backgroundColor: "#EFF2FA",
+					backgroundColor: "#16171B",
 					display: "flex",
 					justifyContent: "space-between",
 					flexDirection: "column",
 					height: "100%",
-					color: "#4c4848",
+					color: "white",
 					p: 3,
 				}}
 			>
 				<Box>
 					{/* Logo */}
 					<Box sx={{ mb: 6, display: "flex", alignItems: "center" }}>
-						<Box
-							style={{ paddingTop: "8px", fontSize: "28px", fontWeight: "700" }}
-						>
-							Bet<span style={{ color: "#F8312F" }}>Blitz</span>
-						</Box>
+						<h2 style={{ paddingTop: "8px" }}>Betblitz🎭</h2>
 					</Box>
 
 					{/* Menu List */}
@@ -185,7 +182,8 @@ export function LeftDrawer({ smaller }) {
 								}}
 								id={path === "/notifications" ? "sdk-trigger-id" : ""}
 								sx={{
-									backgroundColor: index === ind ? "#444444" : "",
+									backgroundColor: index === ind ? "#4954FD" : "",
+									colors: "white",
 									borderRadius: "8px",
 									p: 1,
 									py: 1.5,
@@ -193,19 +191,15 @@ export function LeftDrawer({ smaller }) {
 									cursor: "pointer",
 									"&:hover": {
 										background: index === ind ? "" : "rgb(38 38 38 / 35%)",
-										color: "white",
 									},
 								}}
 							>
 								<Box
 									sx={{
 										justifyContent: open ? "initial" : "center",
-										color: index === ind ? "white" : "#444444",
+										color: index === ind ? "white" : "#828488",
 										alignItems: "center",
 										display: "flex",
-										"&:hover": {
-											color: "white",
-										},
 									}}
 								>
 									<Box
@@ -227,6 +221,58 @@ export function LeftDrawer({ smaller }) {
 								</Box>
 							</Box>
 						))}
+					</Box>
+				</Box>
+				<Box
+					sx={{
+						bottom: "30px",
+						backgroundColor: "#2c2d32",
+						p: 2,
+						borderRadius: "4px",
+					}}
+				>
+					Made during <br /> Constellation✨
+					<Box
+						onClick={() => {
+							localStorage.clear();
+							window.location.replace("/");
+							setAnchorEl(null);
+						}}
+						sx={{
+							colors: "white",
+							borderRadius: "8px",
+							mt: 4,
+							cursor: "pointer",
+							"&:hover": {
+								background: "rgb(38 38 38 / 35%)",
+							},
+						}}
+					>
+						<Box
+							sx={{
+								color: "#828488",
+								alignItems: "center",
+								display: "flex",
+								justifyContent: "space-between",
+							}}
+						>
+							<Box
+								sx={{
+									opacity: open ? 1 : 0,
+								}}
+							>
+								Logout
+							</Box>
+
+							<Box
+								sx={{
+									fontSize: "20px",
+									display: "flex",
+								}}
+							>
+								<AiOutlineLogout />
+							</Box>
+						</Box>
 					</Box>
 				</Box>
 			</Box>
