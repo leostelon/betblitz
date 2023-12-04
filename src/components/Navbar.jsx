@@ -6,6 +6,7 @@ import { connectWalletToSite, getWalletAddress } from "../utils/wallet";
 import { Box, Menu, MenuItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import UseWallet from "../hooks/UseWallet";
+import Logo from "../assets/icon.png";
 
 export const Navbar = () => {
 	const [anchorEl, setAnchorEl] = useState(null);
@@ -35,21 +36,32 @@ export const Navbar = () => {
 	return (
 		<Box
 			sx={{
-				p: 2,
-				pt: 3,
+				px: 4,
+				py: 1,
 				display: "flex",
 				color: "#4c4848",
+				boxShadow: "0 1px 6px rgba(0,0,0,.1)",
 			}}
 		>
-			<Box flex={3}>
-				<h1
+			<Box flex={3} display={"flex"} alignItems={"center"}>
+				<Box
+					sx={{
+						backgroundImage: `url(${Logo})`,
+						backgroundPosition: "center",
+						backgroundRepeat: "no-repeat",
+						backgroundSize: "cover",
+						height: "50px",
+						width: "50px",
+					}}
+				></Box>
+				{/* <h1
 					style={{
-						fontFamily: "Bebas Neue",
+						fontFamily: "Shizuru",
 					}}
 				>
-					Gamble forever❤️
-				</h1>
-				<br />
+					Gamble,forever❤️
+				</h1> */}
+				<h1>BetBlitz</h1>
 			</Box>
 			<Box flex={1} p={1}>
 				<Box>
