@@ -69,6 +69,9 @@ export const getUser = async function () {
 		if (response.status === 200) {
 			return response.data;
 		}
+		if (response.status === 404) {
+			localStorage.clear();
+		}
 	} catch (error) {
 		console.log("user", error.message);
 	}

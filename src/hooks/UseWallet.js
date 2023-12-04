@@ -27,13 +27,17 @@ export default function UseWallet() {
 	async function handleGetUser() {
 		try {
 			const token = localStorage.getItem("token");
+			const address = await getWalletAddress();
+
 			if (token && token !== "" && token !== "undefined") {
 				const user = await getUser();
 				if (user) {
 					setConnectedToSite(true);
+				} else {
+					localStorage.clear();
+					await signUser();
 				}
 			} else {
-				const address = await getWalletAddress();
 				await getUserWithAddress(address);
 				await signUser();
 			}
