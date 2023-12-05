@@ -1,17 +1,62 @@
 import { Box, Button, Divider } from "@mui/material";
 import { CoinImage } from "./CreateCoinGame";
 import { toast } from "react-toastify";
-import { cancleCoinPlay } from "../../api/coin";
+import {
+	cancleCoinPlay,
+	getAvailablePlays,
+	joinCoinPlay,
+} from "../../api/coin";
+import { useEffect, useState } from "react";
+import PlayingCoinDialog from "./PlayingCoinDialog";
 
-export default function AvailableCoinBets({ playData }) {
-	const onCancle = (id) => {
-		const res = cancleCoinPlay(id);
-		if (res.error) {
-			toast("Somithing went wrong", { type: "error" });
-		} else {
-			toast("Play Cancled !", { type: "warning" });
+export default function AvailableCoinBets() {
+	const [data, setData] = useState([]);
+	const [openPlaying, setOpenPlaying] = useState(false);
+	const [isFlipping, setIsFlipping] = useState(false);
+	const [result, setResult] = useState("HEADS");
+
+	const getData = async () => {
+		const _data = await getAvailablePlays();
+		if (_data) {
+			setData(_data);
 		}
 	};
+
+	const onBetClick = async (id) => {
+		setOpenPlaying(true);
+		setIsFlipping(true);
+
+		// call api with _id;
+		const res = await joinCoinPlay(id);
+		if (res.error) {
+			setIsFlipping(false);
+			setOpenPlaying(false);
+		} else {
+			setResult(res.data.result);
+			setIsFlipping(false);
+		}
+
+		setTimeout(async () => {
+			// const randomResult = Math.random() < 0.5 ? "HEADS" : "TAILS";
+			// setResult(randomResult);
+			// setIsFlipping(false);
+			const res = await joinCoinPlay(id);
+			console.log("coin res", res);
+			if (res.error) {
+				setIsFlipping(false);
+				setOpenPlaying(false);
+				getData();
+			} else {
+				setResult(res.data.result);
+				setIsFlipping(false);
+				getData();
+			}
+		}, 1000);
+	};
+
+	useEffect(() => {
+		getData();
+	}, []);
 	return (
 		<Box
 			sx={{
@@ -28,52 +73,65 @@ export default function AvailableCoinBets({ playData }) {
 					mb: 1,
 				}}
 			>
-				My Coin Bets
+				Available Bets
 			</Box>
 
 			<Box>
-				{playData?.length > 0 &&
-					playData.map((play) => (
-						<Box>
-							<Box
-								key={play._id}
-								sx={{
-									display: "flex",
-									alignItems: "center",
-									justifyContent: "space-between",
-									my: 1,
-								}}
-							>
-								<Box>
-									<Box sx={{ mb: 1 }}>
-										My selection : {play.playerOneSelection || ""}
+				{data?.length > 0 &&
+					data.map((play) => {
+						const isUserBet =
+							localStorage.getItem("address") === play.playerOne.address;
+
+						const oppSelection = play.playerOneSelection === "H";
+
+						return (
+							<Box>
+								<Box
+									key={play._id}
+									sx={{
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "space-between",
+										my: 1,
+									}}
+								>
+									<Box>
+										<Box sx={{ mb: 1 }}>
+											selection : {play.playerOneSelection || ""}
+										</Box>
+										<CoinImage
+											selection={play.playerOneSelection}
+											heigth="80px"
+											width="80px"
+										/>
+										In play {play.amount} eth.
 									</Box>
-									<CoinImage
-										selection={play.playerOneSelection}
-										heigth="80px"
-										width="80px"
-									/>
-									In play {play.amount} eth.
+									{play.status === "WAITING" && <Box>My Selection !</Box>}
+									{play.status === "WAITING" && (
+										<Button
+											variant="contained"
+											color="warning"
+											onClick={() => {
+												onBetClick(play._id);
+											}}
+											disabled={isUserBet}
+										>
+											BET it
+										</Button>
+									)}
 								</Box>
-								{play.status === "WAITING" && (
-									<Box>Wating for other player !</Box>
-								)}
-								{play.status === "WAITING" && (
-									<Button
-										variant="contained"
-										color="warning"
-										onClick={() => {
-											onCancle(play._id);
-										}}
-									>
-										Cancle Bet
-									</Button>
-								)}
+								<Divider />
 							</Box>
-							<Divider />
-						</Box>
-					))}
+						);
+					})}
 			</Box>
+
+			<PlayingCoinDialog
+				open={openPlaying}
+				setOpen={setOpenPlaying}
+				isFlipping={isFlipping}
+				result={result}
+			/>
 		</Box>
 	);
 }

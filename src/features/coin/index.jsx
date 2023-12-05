@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { CreateCoinGame } from "./CreateCoinGame";
 import { CoinFlipper } from "./CoinFlipper";
-import PlayingCoinDialog from "./PlayingCoin";
+import PlayingCoinDialog from "./PlayingCoinDialog";
 import { getCoinPlay } from "../../api/coin";
 import MyCoinBets from "./MyCoinBets";
 import { Button, ButtonGroup } from "@mui/material";
 import AvailableCoinBets from "./AvailableCoinBets";
 
 export default function Coin() {
-	const [openPlaying, setOpenPlaying] = useState(true);
 	const [loadingData, setLoadingData] = useState(true);
 
 	const [playData, setPlayingData] = useState([]);
@@ -19,9 +18,7 @@ export default function Coin() {
 		if (data) {
 			console.log(data);
 			setPlayingData(data);
-			setOpenPlaying(true);
 		} else {
-			setOpenPlaying(false);
 		}
 		setLoadingData(false);
 	};
@@ -35,12 +32,6 @@ export default function Coin() {
 			{!loadingData && (
 				<>
 					<CreateCoinGame getCoinData={getCoinData} />
-					{/* <CoinFlipper /> */}
-					{/* <PlayingCoinDialog
-						open={openPlaying}
-						setOpen={setOpenPlaying}
-						playData={playData}
-					/> */}
 					<BetOptions option={option} setOption={setOption} />
 					{option === 0 && <AvailableCoinBets playData={playData} />}
 					{option === 1 && <MyCoinBets playData={playData} />}
@@ -60,6 +51,7 @@ const BetOptions = ({ option, setOption }) => {
 						setOption(i);
 					}}
 					variant={option === i ? "contained" : "outlined"}
+					key={name}
 				>
 					{name}
 				</Button>
