@@ -1,10 +1,20 @@
-import { Box, Button, FormControl, TextField } from "@mui/material";
+import {
+	Box,
+	Button,
+	CircularProgress,
+	FormControl,
+	TextField,
+} from "@mui/material";
 import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { useState } from "react";
 import { createQuestion, uploadNodejsScript } from "../api/questions";
 import PostEditor from "../components/Editor";
 import { toast } from "react-toastify";
+import { getWalletAddress, switchChain } from "../utils/wallet";
+import BetBlitz from "../contracts/BetBlitz.json";
+import { CHAIN } from "../constant";
+import Web3 from "web3";
 
 export default function Create() {
 	const [loading, setLoading] = useState(false);
@@ -31,11 +41,44 @@ export default function Create() {
 		return path;
 	}
 
+	async function cQ(qid, amount) {
+		await switchChain();
+		setLoading(true);
+		const web3 = new Web3(window.ethereum);
+
+		const contract = new web3.eth.Contract(
+			BetBlitz.abi,
+			CHAIN.contract_address
+		);
+
+		const currentAddress = await getWalletAddress();
+		const betAmount = Web3.utils.toWei(amount);
+
+		// Gas Calculation
+		const gasPrice = await web3.eth.getGasPrice();
+		const gas = await contract.methods
+			.createQuestion(qid, betAmount)
+			.estimateGas({
+				from: currentAddress,
+			});
+
+		await contract.methods
+			.createQuestion(qid, betAmount)
+			.send({ from: currentAddress, gasPrice, gas })
+			.on("receipt", async function (receipt) {
+				setLoading(false);
+				alert("Succesfully voted🥳🍾");
+				window.location.reload();
+			});
+		setLoading(false);
+	}
+
 	const onFormSubmit = async () => {
 		const path = await uploadCode();
-		console.log("path", path);
 		if (path) {
-			const res = await createQuestion({ ...formData, path: `${path}` });
+			const qid = Math.floor(100000 + Math.random() * 900000);
+			const res = await createQuestion({ ...formData, path: `${path}`, qid });
+			await cQ();
 			if (res) {
 				setFormData({
 					question: "",
@@ -135,7 +178,14 @@ export default function Create() {
 							}}
 							onClick={onFormSubmit}
 						>
-							Go Live
+							{loading ? (
+								<CircularProgress
+									size={"10px"}
+									sx={{ backgroundColor: "white" }}
+								/>
+							) : (
+								"Go Live"
+							)}
 						</Button>
 					</Box>
 				</FormControl>
