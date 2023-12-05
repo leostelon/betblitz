@@ -3,13 +3,10 @@ import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { QuestionCard } from "../components/QuestionCard";
-import Football from "../assets/football.png";
-import Chess from "../assets/chess.png";
 import Baseball from "../assets/cricket.png";
 import Crypto from "../assets/crypto.png";
 import News from "../assets/news.png";
 import Basketball from "../assets/basketball.png";
-import Stocks from "../assets/stocks.png";
 import Youtube from "../assets/youtube.png";
 import Banner from "../assets/Group 2609059.png";
 
