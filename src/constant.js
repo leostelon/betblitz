@@ -18,6 +18,18 @@ export const ChainsConfig = {
         blockExplorerUrls: ["https://mumbai.polygonscan.com/"],
         contract_address: "0x9a3FbCb823f2Bc9210cb301e5F0cCA8a4E2Ce4cD",
     },
+    FUJI: {
+        chainId: Web3.utils.toHex(43113),
+        rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
+        chainName: "Avalanche Fuji",
+        nativeCurrency: {
+            name: "AVAX",
+            symbol: "AVAX",
+            decimals: 18,
+        },
+        blockExplorerUrls: ["https://cchain.explorer.avax-test.network/"],
+        contract_address: "0x87C377fDe75f49e64ACC8a8F4cc0F601458f205C",
+    },
 };
 
-export const CHAIN = ChainsConfig["POLYGON_TESTNET"];
+export const CHAIN = ChainsConfig["FUJI"];
