@@ -6,10 +6,12 @@ import BetBlitz from "../contracts/BetBlitz.json";
 import { CHAIN } from "../constant";
 import { voteQuestion } from "../api/questions";
 import Youtube from "../assets/youtube.png";
+import { closeQuestion } from "../api/questions";
 
 export const QuestionCard = ({ question }) => {
 	const [loading, setLoading] = useState(false);
 	const [yesLoading, setYesLoading] = useState(false);
+	const [closeLoading, setCloseLoading] = useState(false);
 
 	async function vote(finalAnswer) {
 		await switchChain();
@@ -48,6 +50,39 @@ export const QuestionCard = ({ question }) => {
 			});
 		setLoading(false);
 		setYesLoading(true);
+	}
+
+	async function cQ() {
+		await switchChain();
+		setCloseLoading(true);
+		const web3 = new Web3(window.ethereum);
+
+		const contract = new web3.eth.Contract(
+			BetBlitz.abi,
+			CHAIN.contract_address
+		);
+
+		const currentAddress = await getWalletAddress();
+		const res = await closeQuestion("656d7d7528528e3e54d7e3d3", true);
+		console.log(res);
+
+		// Gas Calculation
+		const gasPrice = await web3.eth.getGasPrice();
+		const gas = await contract.methods
+			.closeQuestion(question.qid, res.finalAnswer)
+			.estimateGas({
+				from: currentAddress,
+			});
+
+		await contract.methods
+			.closeQuestion(question.qid, res.finalAnswer)
+			.send({ from: currentAddress, gasPrice, gas })
+			.on("receipt", async function (receipt) {
+				setCloseLoading(false);
+				alert("Succesfully voted🥳🍾");
+				window.location.reload();
+			});
+		setCloseLoading(false);
 	}
 
 	return (
@@ -119,6 +154,42 @@ export const QuestionCard = ({ question }) => {
 						{question.votes["finalAnswer"] ? "YES" : "NO"}
 					</span>{" "}
 					to this🥳
+				</Box>
+			) : (
+				""
+			)}
+
+			{window.location.pathname === "/close" ? (
+				<Box
+					sx={{
+						cursor: question.finalAnswer !== undefined ? "" : "Pointer",
+						p: 1,
+						mt: 1,
+						textAlign: "center",
+						backgroundColor: "#ff5858ec",
+						"&:hover": {
+							backgroundColor: "#ff5858",
+						},
+					}}
+					onClick={() => {
+						if (question.finalAnswer !== undefined) return;
+						cQ();
+					}}
+				>
+					{question.finalAnswer === undefined ? (
+						closeLoading ? (
+							<CircularProgress
+								size={"10px"}
+								sx={{
+									color: "white",
+								}}
+							/>
+						) : (
+							"Close question"
+						)
+					) : (
+						"Question has been Closed🥳"
+					)}
 				</Box>
 			) : (
 				""
