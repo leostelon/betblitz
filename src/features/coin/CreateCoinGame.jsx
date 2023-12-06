@@ -5,21 +5,57 @@ import headsImage from "../../assets/head.png";
 import tailsImage from "../../assets/tail.png";
 import { createCoinPlay } from "../../api/coin";
 import { toast } from "react-toastify";
+import { CHAIN } from "../../constant";
+import { getWalletAddress, switchChain } from "../../utils/wallet";
+import Web3 from "web3";
+
+import BetBlitzCoin from "../../contracts/BetBlitzCoin.json";
 
 export const CreateCoinGame = ({ getCoinData }) => {
 	const [selection, setSelection] = useState("HEADS");
 	const [amount, setAmount] = useState("");
+	const [loading, setLoading] = useState(false);
+
+	console.log(typeof amount);
 
 	const onSubmit = async () => {
-		const res = await createCoinPlay({
-			playerOneSelection: selection,
-			amount,
+		await switchChain();
+		setLoading(true);
+		const web3 = new Web3(window.ethereum);
+
+		const contract = new web3.eth.Contract(
+			BetBlitzCoin.abi,
+			CHAIN.contract_address
+		);
+
+		const currentAddress = await getWalletAddress();
+		const gasPrice = await web3.eth.getGasPrice();
+		const selectionInt = selection === "HEADS" ? 1 : 0;
+		const amountInWei = web3.utils.toWei(amount);
+		const gas = await contract.methods.createBet(selectionInt).estimateGas({
+			from: currentAddress,
+			value: amountInWei,
 		});
-		if (res.error) {
-			toast("Somithing went wrong", { type: "error" });
-		} else {
-			getCoinData();
-		}
+
+		await contract.methods
+			.createBet(selectionInt)
+			.send({ from: currentAddress, value: amountInWei, gasPrice, gas })
+			.on("receipt", async function (receipt) {
+				console.log("create coin Bet receipt", receipt);
+
+				const res = await createCoinPlay({
+					playerOneSelection: selection,
+					amount,
+				});
+				if (res.error) {
+					toast("Something went wrong", { type: "error" });
+					//
+				} else {
+					toast("Created Bet🥳🍾", { type: "success" });
+					getCoinData();
+				}
+			});
+		setLoading(false);
 	};
 
 	return (
