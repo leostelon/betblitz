@@ -5,11 +5,12 @@ import headsImage from "../../assets/head.png";
 import tailsImage from "../../assets/tail.png";
 import { createCoinPlay } from "../../api/coin";
 import { toast } from "react-toastify";
-import { CHAIN } from "../../constant";
 import { getWalletAddress, switchChain } from "../../utils/wallet";
 import Web3 from "web3";
 
 import BetBlitzCoin from "../../contracts/BetBlitzCoin.json";
+
+const contract_address = "0x924a8B3d16C3840566701F90539a56A96Fc1550E";
 
 export const CreateCoinGame = ({ getCoinData }) => {
 	const [selection, setSelection] = useState("HEADS");
@@ -25,7 +26,7 @@ export const CreateCoinGame = ({ getCoinData }) => {
 
 		const contract = new web3.eth.Contract(
 			BetBlitzCoin.abi,
-			CHAIN.contract_address
+			contract_address
 		);
 
 		const currentAddress = await getWalletAddress();
@@ -36,16 +37,20 @@ export const CreateCoinGame = ({ getCoinData }) => {
 			from: currentAddress,
 			value: amountInWei,
 		});
+		console.log("gass", gas);
 
 		await contract.methods
 			.createBet(selectionInt)
 			.send({ from: currentAddress, value: amountInWei, gasPrice, gas })
 			.on("receipt", async function (receipt) {
 				console.log("create coin Bet receipt", receipt);
+				const cid = await contract.methods.id().call();
+				console.log("cid", cid);
 
 				const res = await createCoinPlay({
 					playerOneSelection: selection,
 					amount,
+					cid,
 				});
 				if (res.error) {
 					toast("Something went wrong", { type: "error" });
