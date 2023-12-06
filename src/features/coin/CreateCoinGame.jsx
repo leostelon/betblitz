@@ -3,63 +3,20 @@ import { useState } from "react";
 
 import headsImage from "../../assets/head.png";
 import tailsImage from "../../assets/tail.png";
-import { createCoinPlay } from "../../api/coin";
-import { toast } from "react-toastify";
-import { getWalletAddress, switchChain } from "../../utils/wallet";
-import Web3 from "web3";
-
-import BetBlitzCoin from "../../contracts/BetBlitzCoin.json";
-
-const contract_address = "0x924a8B3d16C3840566701F90539a56A96Fc1550E";
+import UseCoinPlay from "../../hooks/UseCoinPlay";
 
 export const CreateCoinGame = ({ getCoinData }) => {
 	const [selection, setSelection] = useState("HEADS");
 	const [amount, setAmount] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	console.log(typeof amount);
+	const { createGame } = UseCoinPlay();
 
 	const onSubmit = async () => {
-		await switchChain();
 		setLoading(true);
-		const web3 = new Web3(window.ethereum);
-
-		const contract = new web3.eth.Contract(
-			BetBlitzCoin.abi,
-			contract_address
-		);
-
-		const currentAddress = await getWalletAddress();
-		const gasPrice = await web3.eth.getGasPrice();
-		const selectionInt = selection === "HEADS" ? 1 : 0;
-		const amountInWei = web3.utils.toWei(amount);
-		const gas = await contract.methods.createBet(selectionInt).estimateGas({
-			from: currentAddress,
-			value: amountInWei,
-		});
-		console.log("gass", gas);
-
-		await contract.methods
-			.createBet(selectionInt)
-			.send({ from: currentAddress, value: amountInWei, gasPrice, gas })
-			.on("receipt", async function (receipt) {
-				console.log("create coin Bet receipt", receipt);
-				const cid = await contract.methods.id().call();
-				console.log("cid", cid);
-
-				const res = await createCoinPlay({
-					playerOneSelection: selection,
-					amount,
-					cid,
-				});
-				if (res.error) {
-					toast("Something went wrong", { type: "error" });
-					//
-				} else {
-					toast("Created Bet🥳🍾", { type: "success" });
-					getCoinData();
-				}
-			});
+		await createGame(selection, amount);
+		getCoinData();
+		setAmount();
 		setLoading(false);
 	};
 
@@ -147,8 +104,9 @@ export const CreateCoinGame = ({ getCoinData }) => {
 						borderRadius: "4px",
 					}}
 					onClick={onSubmit}
+					disabled={loading}
 				>
-					Go Live
+					{loading ? "Creating" : "Go Live"}
 				</Button>
 			</Box>
 		</Box>

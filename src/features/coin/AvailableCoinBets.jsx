@@ -8,12 +8,15 @@ import {
 } from "../../api/coin";
 import { useEffect, useState } from "react";
 import PlayingCoinDialog from "./PlayingCoinDialog";
+import UseCoinPlay from "../../hooks/UseCoinPlay";
 
 export default function AvailableCoinBets() {
 	const [data, setData] = useState([]);
 	const [openPlaying, setOpenPlaying] = useState(false);
 	const [isFlipping, setIsFlipping] = useState(false);
 	const [result, setResult] = useState("HEADS");
+
+	const { betGame } = UseCoinPlay();
 
 	const getData = async () => {
 		const _data = await getAvailablePlays();
@@ -48,6 +51,7 @@ export default function AvailableCoinBets() {
 				getData();
 			} else {
 				setResult(res.data.result);
+				await betGame(res.data.result, res.data.cid, res.data.amount);
 				setIsFlipping(false);
 				getData();
 			}
